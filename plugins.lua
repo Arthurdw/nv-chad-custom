@@ -7,24 +7,44 @@ local plugins = {
         "rust-analyzer",
       },
     },
+    lazy = false,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = "williamboman/mason.nvim",
+    lazy = false,
+    config = function()
+      require("mason").setup()
+      require("mason-lspconfig").setup()
+
+      require("mason-lspconfig").setup_handlers {
+          -- The first entry (without a key) will be the default handler
+          -- and will be called for each installed server that doesn't have
+          -- a dedicated handler.
+          function (server_name) -- default handler (optional)
+              require("lspconfig")[server_name].setup {}
+          end,
+          -- Next, you can provide a dedicated handler for specific servers.
+          -- For example, a handler override for the `rust_analyzer`:
+          ["rust_analyzer"] = function ()
+            local opts = require "custom.configs.rust-tools"
+            require('rust-tools').setup(opts)
+          end
+      }
+    end
   },
   {
     "neovim/nvim-lspconfig",
+    dependencies = "williamboman/mason-lspconfig.nvim",
+    lazy = false,
     config = function()
       require "plugins.configs.lspconfig"
-      require "custom.configs.lspconfig"
     end,
   },
   {
     "simrat39/rust-tools.nvim",
     ft = "rust",
     dependencies = "neovim/nvim-lspconfig",
-    opts = function ()
-      return require "custom.configs.rust-tools"
-    end,
-    config = function(_, opts)
-      require('rust-tools').setup(opts)
-    end
   },
   {
     "mfussenegger/nvim-dap",
@@ -73,8 +93,14 @@ local plugins = {
     end,
   },
   {
-    "github/copilot.vim",
-    lazy = false
+    "zbirenbaum/copilot.lua",
+    lazy = false,
+    opts = function ()
+      return require "custom.configs.copilot"
+    end,
+    config = function(_, opts)
+      require("copilot").setup(opts)
+    end
   },
   -- {
   --   "andweeb/presence.nvim",
