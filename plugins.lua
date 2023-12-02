@@ -111,6 +111,17 @@ local plugins = {
   --   config = function(_, opts)
   --     require('presence').setup(opts)
   --   end
-  -- }
+  -- },
+  {
+    'https://codeberg.org/esensar/nvim-dev-container',
+    dependencies = 'nvim-treesitter/nvim-treesitter',
+    config = function()
+      require('devcontainer').setup{}
+    end
+  },
+  {
+    "wakatime/vim-wakatime",
+    lazy = false,
+  }
 }
 return plugins
